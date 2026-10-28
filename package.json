@@ -1,0 +1,14 @@
+{
+  "name": "in-focum",
+  "version": "0.3.1",
+  "private": true,
+  "description": "Heatmaps for Obsidian Bases: focus sessions against a daily goal, and a map for every habit.",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "6.0.3"
+  }
+}

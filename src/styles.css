@@ -1,0 +1,363 @@
+/* In Focum heatmaps. Not done is dark (Flexoki 950 in dark themes); the chosen color fills done.
+   The color ramps (gh-color-*) are appended by build.mjs from colors.json. */
+
+.gh-root {
+  --gh-cell: 12px;
+  --gh-gap: 3px;
+  --gh-radius: 3px;
+  position: relative;
+  padding: 6px 4px 4px;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  line-height: 1.4;
+}
+
+.theme-dark .gh-root {
+  --gh-empty: #1c1b1a;
+  --gh-off: rgba(242, 240, 229, 0.045);
+  --gh-hover: #f2f0e5;
+}
+
+.theme-light .gh-root {
+  --gh-empty: #e6e4d9;
+  --gh-off: rgba(16, 15, 15, 0.035);
+  --gh-hover: #100f0f;
+}
+
+/* The dashboard note: room for a full year at a readable size (Obsidian's and Minimal's widths). */
+.in-focum-dashboard {
+  /* Obsidian's own switches for the properties panel: the dashboard shows maps only. */
+  --metadata-display-editing: none;
+  --metadata-display-reading: none;
+  --file-line-width: 1280px;
+  --line-width: 1280px;
+  --line-width-wide: 1280px;
+  --max-width: 96%;
+}
+
+
+.gh-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Headline numbers. */
+.gh-kpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 32px;
+  margin: 2px 0 16px;
+}
+
+.gh-kpi-label {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.gh-kpi-value {
+  font-size: 1.75em;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.gh-kpi-note {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+.gh-kpi-note.is-good {
+  color: var(--text-muted);
+}
+
+.gh-kpi-note.is-good::before {
+  content: "✓ ";
+  color: var(--gh-4);
+  font-weight: 700;
+}
+
+/* The calendar grid: weeks are columns, Monday on top. */
+.gh-map {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  justify-content: start;
+  column-gap: 6px;
+  row-gap: 4px;
+}
+
+.gh-map.no-weekdays {
+  grid-template-columns: auto;
+}
+
+.gh-months {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--gh-cell);
+  column-gap: var(--gh-gap);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  line-height: 1.2;
+}
+
+.gh-months span {
+  white-space: nowrap;
+}
+
+.gh-map-months {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.gh-weekdays {
+  grid-column: 1;
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: repeat(7, var(--gh-cell));
+  row-gap: var(--gh-gap);
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  line-height: var(--gh-cell);
+}
+
+.gh-grid {
+  grid-row: 2;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, var(--gh-cell));
+  grid-auto-columns: var(--gh-cell);
+  gap: var(--gh-gap);
+  border-radius: var(--radius-s);
+  outline: none;
+}
+
+.gh-map:not(.no-weekdays) .gh-grid {
+  grid-column: 2;
+}
+
+.gh-map.no-weekdays .gh-map-months { grid-column: 1; }
+
+.gh-map.no-weekdays .gh-grid {
+  grid-row: auto;
+}
+
+.gh-grid:focus-visible {
+  box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.gh-cell {
+  width: var(--gh-cell);
+  height: var(--gh-cell);
+  border-radius: var(--gh-radius);
+  background: var(--gh-empty);
+  cursor: pointer;
+}
+
+.gh-cell.l1 { background: var(--gh-1); }
+.gh-cell.l2 { background: var(--gh-2); }
+.gh-cell.l3 { background: var(--gh-3); }
+.gh-cell.l4 { background: var(--gh-4); }
+.gh-cell.done { background: var(--gh-done); }
+.gh-cell.missed { background: var(--gh-empty); }
+.gh-cell.off { background: var(--gh-off); }
+
+.gh-cell.pending {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--text-muted);
+}
+
+.gh-cell.is-future {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.gh-cell.is-today {
+  outline: 1.5px solid var(--text-muted);
+  outline-offset: 1px;
+}
+
+/* Today matters only where something was planned. */
+.gh-cell.off.is-today { outline: none; }
+
+.gh-grid .gh-cell:hover,
+.gh-grid:focus-visible .gh-cell.is-active {
+  outline: 1.5px solid var(--gh-hover);
+  outline-offset: 1px;
+}
+
+/* Tooltip: value first, then the date. */
+.gh-tip {
+  position: absolute;
+  z-index: var(--layer-tooltip);
+  top: 0;
+  left: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-primary);
+  box-shadow: var(--shadow-s);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, calc(-100% - 8px));
+  transition: opacity 80ms ease-out;
+}
+
+.gh-tip.is-visible { opacity: 1; }
+.gh-tip.is-below { transform: translate(-50%, 8px); }
+
+.gh-tip-value {
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.gh-tip-detail {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+/* Compact: one line and a small map, for daily notes. */
+.gh-root.gh-compact { padding: 2px 0 0; }
+
+.gh-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.gh-line-value {
+  color: var(--text-normal);
+  font-weight: 600;
+}
+
+.gh-scale {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+.gh-scale .gh-cell.gh-swatch {
+  width: 9px;
+  height: 9px;
+}
+
+/* In a note, the compact map stands alone: no Bases toolbar above it. */
+.bases-embed:has(> .bases-view > .gh-compact) > .bases-header { display: none; }
+
+/* Legend. */
+.gh-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.gh-legend-title:empty { display: none; }
+
+.gh-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gh-cell.gh-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  cursor: default;
+}
+
+/* Habits: a label column and one map per habit, aligned on a shared month axis. */
+.gh-habits-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 24px;
+  margin-bottom: 14px;
+}
+
+.gh-habits-head .gh-legend { margin-top: 0; }
+
+.gh-summary { color: var(--text-muted); }
+
+.gh-summary-value {
+  color: var(--text-normal);
+  font-weight: 600;
+}
+
+.gh-rows {
+  display: grid;
+  grid-template-columns: repeat(var(--gh-columns, 1), max-content);
+  column-gap: 48px;
+  row-gap: 16px;
+  justify-content: start;
+  align-items: start;
+}
+
+.gh-habit {
+  display: grid;
+  grid-template-columns: 164px auto;
+  column-gap: 16px;
+  align-items: start;
+}
+
+.gh-axis-block { margin-bottom: -8px; }
+
+.gh-section {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.gh-label {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.gh-label-name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.gh-label-name:hover { text-decoration: underline; }
+
+.gh-label.is-past .gh-label-name { color: var(--text-muted); }
+
+.gh-label-meta {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+.gh-footnote {
+  margin-top: 14px;
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+/* Narrow panes and phones: the name sits above its map. */
+.gh-root.is-narrow .gh-habit {
+  grid-template-columns: auto;
+  row-gap: 6px;
+}
+
+.gh-root.is-narrow .gh-axis-spacer { display: none; }

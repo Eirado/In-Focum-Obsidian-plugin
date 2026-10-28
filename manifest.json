@@ -1,0 +1,9 @@
+{
+  "id": "in-focum",
+  "name": "In Focum",
+  "version": "0.3.1",
+  "minAppVersion": "1.10.0",
+  "description": "Heatmaps for Bases: focus sessions against a daily goal, and a map for every habit.",
+  "author": "gabrielamaral",
+  "isDesktopOnly": false
+}
